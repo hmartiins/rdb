@@ -10,30 +10,9 @@
 
 int main(int argc, char *argv[])
 {
-  int port = 3333;
-
-  static struct option long_options[] = {
-      {"port", required_argument, 0, 'p'},
-      {0, 0, 0, 0}};
-
-  int opt;
-  while ((opt = getopt_long(argc, argv, "p:", long_options, NULL)) != -1)
-  {
-    switch (opt)
-    {
-    case 'p':
-      port = atoi(optarg);
-      if (port <= 0 || port > 65535)
-      {
-        std::cerr << "Porta inválida! Escolha um valor entre 1 e 65535." << std::endl;
-        return EXIT_FAILURE;
-      }
-      break;
-    default:
-      std::cerr << "Uso: " << argv[0] << " --port <porta>" << std::endl;
-      return EXIT_FAILURE;
-    }
-  }
+  int port = getPortArguments(argc, argv);
+  if (port == -1)
+    return EXIT_FAILURE;
 
   int server_fd, new_socket;
   struct sockaddr_in address;
