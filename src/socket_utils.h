@@ -36,13 +36,13 @@ int getPortArguments(int argc, char *argv[])
       port = std::atoi(optarg);
       if (port <= 0 || port > 65535)
       {
-        std::cerr << "Porta inválida! Escolha um valor entre 1 e 65535." << std::endl;
+        std::cerr << "Invalid PORT. Selected a value between 1 and 65535." << std::endl;
         return -1;
       }
     }
     else
     {
-      std::cerr << "Uso: " << argv[0] << " --port <porta>" << std::endl;
+      std::cerr << "Use: " << argv[0] << " --port <port>" << std::endl;
       return -1;
     }
   }
