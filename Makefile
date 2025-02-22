@@ -1,6 +1,7 @@
 # Directories
 SRC_DIR = src
 BUILD_DIR = out
+PORT = 3333
 
 # Compiler
 CXX = g++
@@ -18,3 +19,9 @@ client:
 
 clean:
 	rm -rf $(BUILD_DIR)/*
+
+run-client: 
+	./$(BUILD_DIR)/client --port $(PORT)
+
+run-server: 
+	./$(BUILD_DIR)/server --port $(PORT)
