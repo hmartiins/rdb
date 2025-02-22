@@ -3,12 +3,39 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <cstdlib>
+#include <getopt.h>
+#include <netinet/in.h>
 
-#include "config.h"
 #include "socket_utils.h"
 
-int main()
+int main(int argc, char *argv[])
 {
+  int port = 3333;
+
+  static struct option long_options[] = {
+      {"port", required_argument, 0, 'p'},
+      {0, 0, 0, 0}};
+
+  int opt;
+  while ((opt = getopt_long(argc, argv, "p:", long_options, NULL)) != -1)
+  {
+    switch (opt)
+    {
+    case 'p':
+      port = atoi(optarg);
+      if (port <= 0 || port > 65535)
+      {
+        std::cerr << "Porta inválida! Escolha um valor entre 1 e 65535." << std::endl;
+        return EXIT_FAILURE;
+      }
+      break;
+    default:
+      std::cerr << "Uso: " << argv[0] << " --port <porta>" << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+
   int sock = 0;
   struct sockaddr_in serv_addr;
   char buffer[1024] = {0};
@@ -16,7 +43,7 @@ int main()
   sock = createSocket();
 
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(PORT);
+  serv_addr.sin_port = htons(port);
 
   if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0)
   {

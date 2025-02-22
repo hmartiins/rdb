@@ -3,12 +3,38 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <cstdlib>
+#include <getopt.h>
 
-#include "config.h"
 #include "socket_utils.h"
 
-int main()
+int main(int argc, char *argv[])
 {
+  int port = 3333;
+
+  static struct option long_options[] = {
+      {"port", required_argument, 0, 'p'},
+      {0, 0, 0, 0}};
+
+  int opt;
+  while ((opt = getopt_long(argc, argv, "p:", long_options, NULL)) != -1)
+  {
+    switch (opt)
+    {
+    case 'p':
+      port = atoi(optarg);
+      if (port <= 0 || port > 65535)
+      {
+        std::cerr << "Porta inválida! Escolha um valor entre 1 e 65535." << std::endl;
+        return EXIT_FAILURE;
+      }
+      break;
+    default:
+      std::cerr << "Uso: " << argv[0] << " --port <porta>" << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+
   int server_fd, new_socket;
   struct sockaddr_in address;
   int addrlen = sizeof(address);
@@ -18,7 +44,7 @@ int main()
 
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = INADDR_ANY;
-  address.sin_port = htons(PORT);
+  address.sin_port = htons(port);
 
   if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
   {
@@ -32,7 +58,7 @@ int main()
     exit(EXIT_FAILURE);
   }
 
-  std::cout << "Waiting server connect..." << std::endl;
+  std::cout << "Servidor rodando na porta " << port << "..." << std::endl;
 
   if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
   {
@@ -40,7 +66,7 @@ int main()
     exit(EXIT_FAILURE);
   }
 
-  std::cout << "Client connected!" << std::endl;
+  std::cout << "Cliente conectado!" << std::endl;
 
   while (true)
   {
@@ -48,10 +74,10 @@ int main()
     int valread = read(new_socket, buffer, sizeof(buffer));
     if (valread > 0)
     {
-      std::cout << "Client: " << buffer << std::endl;
+      std::cout << "Cliente: " << buffer << std::endl;
     }
 
-    std::cout << "You: ";
+    std::cout << "Você: ";
     std::string msg;
     std::getline(std::cin, msg);
     send(new_socket, msg.c_str(), msg.length(), 0);
