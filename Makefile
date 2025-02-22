@@ -20,12 +20,14 @@ check:
 
 server:
 	@echo "Compiling server..."
+	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) ./$(SRC_DIR)/server.cpp -o ./$(BUILD_DIR)/server
 	@if [ $$? -ne 0 ]; then echo "Error: Compilation failed for server!"; exit 1; fi
 	@echo "Server compiled successfully.\n\n"
 
 client:
 	@echo "Compiling client..."
+	@mkdir -p $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) ./$(SRC_DIR)/client.cpp -o ./$(BUILD_DIR)/client
 	@if [ $$? -ne 0 ]; then echo "Error: Compilation failed for client!"; exit 1; fi
 	@echo "Client compiled successfully.\n\n"
