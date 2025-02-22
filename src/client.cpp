@@ -15,7 +15,7 @@ int main()
   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
   {
     perror("Failed to create socket");
-    return -1;
+    exit(EXIT_FAILURE);
   }
 
   serv_addr.sin_family = AF_INET;
@@ -24,13 +24,13 @@ int main()
   if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0)
   {
     perror("Invalid IP Address or Address not supported");
-    return -1;
+    exit(EXIT_FAILURE);
   }
 
   if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
   {
     perror("Failed to connect");
-    return -1;
+    exit(EXIT_FAILURE);
   }
 
   std::cout << "Connected to Server" << std::endl;
