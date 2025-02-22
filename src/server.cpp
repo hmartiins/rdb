@@ -67,7 +67,7 @@ int acceptClientConnection(int server_fd)
     exit(EXIT_FAILURE);
   }
 
-  std::cout << "Cliente conectado!" << std::endl;
+  std::cout << "Client connected!" << std::endl;
   return new_socket;
 }
 
