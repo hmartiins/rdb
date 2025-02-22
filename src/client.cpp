@@ -12,7 +12,7 @@ int main()
   struct sockaddr_in serv_addr;
   char buffer[1024] = {0};
 
-  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) <= 0)
   {
     perror("Failed to create socket");
     exit(EXIT_FAILURE);
