@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 
 #include "config.h"
+#include "socket_utils.h"
 
 int main()
 {
@@ -13,11 +14,7 @@ int main()
   int addrlen = sizeof(address);
   char buffer[1024] = {0};
 
-  if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) <= 0)
-  {
-    perror("Failed to create socket");
-    exit(EXIT_FAILURE);
-  }
+  server_fd = createSocket();
 
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = INADDR_ANY;
