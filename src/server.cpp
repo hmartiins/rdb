@@ -35,7 +35,7 @@ int main()
     exit(EXIT_FAILURE);
   }
 
-  std::cout << "Aguardando conexão no servidor..." << std::endl;
+  std::cout << "Waiting server connect..." << std::endl;
 
   if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
   {
@@ -43,7 +43,7 @@ int main()
     exit(EXIT_FAILURE);
   }
 
-  std::cout << "Cliente conectado!" << std::endl;
+  std::cout << "Client connected!" << std::endl;
 
   while (true)
   {
