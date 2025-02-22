@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#define PORT 8000
+#include "config.h"
 
 int main()
 {
