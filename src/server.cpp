@@ -5,8 +5,14 @@
 #include <netinet/in.h>
 #include <cstdlib>
 #include <getopt.h>
-
 #include "socket_utils.h"
+
+constexpr int BUFFER_SIZE = 1024;
+constexpr int MAX_QUEUE = 3;
+
+int setupServerSocket(int port);
+int acceptClientConnection(int server_fd);
+void handleClientMessages(int client_socket);
 
 int main(int argc, char *argv[])
 {
@@ -14,10 +20,19 @@ int main(int argc, char *argv[])
   if (port == -1)
     return EXIT_FAILURE;
 
-  int server_fd, new_socket;
+  int server_fd = setupServerSocket(port);
+  std::cout << "Server running in port " << port << "..." << std::endl;
+
+  int client_socket = acceptClientConnection(server_fd);
+  handleClientMessages(client_socket);
+
+  return 0;
+}
+
+int setupServerSocket(int port)
+{
+  int server_fd;
   struct sockaddr_in address;
-  int addrlen = sizeof(address);
-  char buffer[1024] = {0};
 
   server_fd = createSocket();
 
@@ -31,36 +46,47 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  if (listen(server_fd, 3) < 0)
+  if (listen(server_fd, MAX_QUEUE) < 0)
   {
     perror("Failed to listen");
     exit(EXIT_FAILURE);
   }
 
-  std::cout << "Servidor rodando na porta " << port << "..." << std::endl;
+  return server_fd;
+}
 
-  if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0)
+int acceptClientConnection(int server_fd)
+{
+  struct sockaddr_in address;
+  int addrlen = sizeof(address);
+
+  int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen);
+  if (new_socket < 0)
   {
-    perror("Failed to accept");
+    perror("Failed to accept connection");
     exit(EXIT_FAILURE);
   }
 
   std::cout << "Cliente conectado!" << std::endl;
+  return new_socket;
+}
+
+void handleClientMessages(int client_socket)
+{
+  char buffer[BUFFER_SIZE] = {0};
 
   while (true)
   {
     memset(buffer, 0, sizeof(buffer));
-    int valread = read(new_socket, buffer, sizeof(buffer));
+    int valread = read(client_socket, buffer, sizeof(buffer));
     if (valread > 0)
     {
-      std::cout << "Cliente: " << buffer << std::endl;
+      std::cout << "Client: " << buffer << std::endl;
     }
 
-    std::cout << "Você: ";
+    std::cout << "Server (you): ";
     std::string msg;
     std::getline(std::cin, msg);
-    send(new_socket, msg.c_str(), msg.length(), 0);
+    send(client_socket, msg.c_str(), msg.length(), 0);
   }
-
-  return 0;
 }
