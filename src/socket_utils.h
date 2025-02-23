@@ -3,9 +3,9 @@
 
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
 #include <iostream>
 #include <cstdlib>
+#include <getopt.h>
 
 constexpr int DEFAULT_PORT = 3333;
 
