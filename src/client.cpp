@@ -4,14 +4,14 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <cstdlib>
-#include <getopt.h>
-#include <netinet/in.h>
+#include <thread>
 #include "socket_utils.h"
 
 constexpr int BUFFER_SIZE = 1024;
 
 int setupServerConnection(int port);
-void handleServerCommunication(int sock);
+void receiveServerMessages(int sock);
+void sendMessagesToServer(int sock);
 
 int main(int argc, char *argv[])
 {
@@ -20,9 +20,12 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
 
   int sock = setupServerConnection(port);
-  std::cout << "Server connected!" << std::endl;
 
-  handleServerCommunication(sock);
+  std::thread receiveThread(receiveServerMessages, sock);
+
+  sendMessagesToServer(sock);
+
+  receiveThread.join();
 
   return 0;
 }
@@ -49,25 +52,34 @@ int setupServerConnection(int port)
     exit(EXIT_FAILURE);
   }
 
+  std::cout << "Connected to server!" << std::endl;
+
   return sock;
 }
 
-void handleServerCommunication(int sock)
+void receiveServerMessages(int sock)
 {
   char buffer[BUFFER_SIZE] = {0};
 
   while (true)
   {
-    std::cout << "Client (you): ";
-    std::string msg;
-    std::getline(std::cin, msg);
-
-    send(sock, msg.c_str(), msg.length(), 0);
-
+    memset(buffer, 0, sizeof(buffer));
     int valread = read(sock, buffer, sizeof(buffer));
     if (valread > 0)
     {
-      std::cout << "Server: " << buffer << std::endl;
+      std::cout << "\nServer: " << buffer << std::endl;
+      std::cout << "Client (you): " << std::flush;
     }
+  }
+}
+
+void sendMessagesToServer(int sock)
+{
+  std::string msg;
+  while (true)
+  {
+    std::cout << "Client (you): ";
+    std::getline(std::cin, msg);
+    send(sock, msg.c_str(), msg.length(), 0);
   }
 }

@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <cstdlib>
-#include <getopt.h>
+#include <thread>
 #include "socket_utils.h"
 
 constexpr int BUFFER_SIZE = 1024;
@@ -12,7 +12,8 @@ constexpr int MAX_QUEUE = 3;
 
 int setupServerSocket(int port);
 int acceptClientConnection(int server_fd);
-void handleClientMessages(int client_socket);
+void receiveClientMessages(int client_socket);
+void sendMessagesToClient(int client_socket);
 
 int main(int argc, char *argv[])
 {
@@ -21,10 +22,15 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
 
   int server_fd = setupServerSocket(port);
-  std::cout << "Server running in port " << port << "..." << std::endl;
+  std::cout << "Server running on port " << port << "..." << std::endl;
 
   int client_socket = acceptClientConnection(server_fd);
-  handleClientMessages(client_socket);
+
+  std::thread receiveThread(receiveClientMessages, client_socket);
+
+  sendMessagesToClient(client_socket);
+
+  receiveThread.join();
 
   return 0;
 }
@@ -71,7 +77,7 @@ int acceptClientConnection(int server_fd)
   return new_socket;
 }
 
-void handleClientMessages(int client_socket)
+void receiveClientMessages(int client_socket)
 {
   char buffer[BUFFER_SIZE] = {0};
 
@@ -81,11 +87,18 @@ void handleClientMessages(int client_socket)
     int valread = read(client_socket, buffer, sizeof(buffer));
     if (valread > 0)
     {
-      std::cout << "Client: " << buffer << std::endl;
+      std::cout << "\nClient: " << buffer << std::endl;
+      std::cout << "Server (you): " << std::flush;
     }
+  }
+}
 
+void sendMessagesToClient(int client_socket)
+{
+  std::string msg;
+  while (true)
+  {
     std::cout << "Server (you): ";
-    std::string msg;
     std::getline(std::cin, msg);
     send(client_socket, msg.c_str(), msg.length(), 0);
   }
