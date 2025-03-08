@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #include <cstdlib>
 #include <thread>
-#include "socket_utils.h"
+#include "socket_utils.hpp"
 
 constexpr int BUFFER_SIZE = 1024;
 constexpr int MAX_QUEUE = 3;
