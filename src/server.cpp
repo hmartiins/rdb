@@ -6,6 +6,9 @@
 #include <cstdlib>
 #include <thread>
 #include "socket_utils.hpp"
+#include "json/create-file.hpp"
+#include "utils/split.hpp"
+#include <vector>
 
 constexpr int BUFFER_SIZE = 1024;
 constexpr int MAX_QUEUE = 3;
@@ -87,6 +90,18 @@ void receiveClientMessages(int client_socket)
     int valread = read(client_socket, buffer, sizeof(buffer));
     if (valread > 0)
     {
+      std::vector<std::string> split_result = split(buffer, ' ');
+      std::string filename = split_result[0];
+      std::string json_string = split_result[1];
+
+      std::cout << json_string << std::endl;
+
+      createJsonFile(
+          JsonData{
+              .json_string = json_string,
+              .file_name = filename,
+          });
+
       std::cout << "\nClient: " << buffer << std::endl;
       std::cout << "Server (you): " << std::flush;
     }
