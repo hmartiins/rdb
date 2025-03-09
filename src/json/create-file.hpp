@@ -18,6 +18,8 @@ void createJsonFile(JsonData data)
     return;
   }
 
+  std::cout << "🛠️ Server creating " << data.file_name << std::endl;
+
   try
   {
     json parsed_json = json::parse(data.json_string);

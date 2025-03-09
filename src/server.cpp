@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
 
   int server_fd = setupServerSocket(port);
-  std::cout << "Server running on port " << port << "..." << std::endl;
+  std::cout << "🟢 Server running on port " << port << "..." << std::endl;
 
   while (true)
   {
@@ -43,20 +43,19 @@ int setupServerSocket(int port)
   struct sockaddr_in address;
 
   server_fd = createSocket();
-
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = INADDR_ANY;
   address.sin_port = htons(port);
 
   if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
   {
-    perror("Failed to bind");
+    perror("❌ Failed to bind");
     exit(EXIT_FAILURE);
   }
 
   if (listen(server_fd, MAX_QUEUE) < 0)
   {
-    perror("Failed to listen");
+    perror("❌ Failed to listen");
     exit(EXIT_FAILURE);
   }
 
@@ -66,15 +65,16 @@ int setupServerSocket(int port)
 int acceptClientConnection(int server_fd)
 {
   struct sockaddr_in address;
-  int addrlen = sizeof(address);
+  socklen_t addrlen = sizeof(address);
 
-  int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen);
+  int new_socket = accept(server_fd, (struct sockaddr *)&address, &addrlen);
   if (new_socket < 0)
   {
-    perror("Failed to accept connection");
+    perror("❌ Failed to accept connection");
     exit(EXIT_FAILURE);
   }
 
+  std::cout << "🔵 New client connected!" << std::endl;
   return new_socket;
 }
 
@@ -85,14 +85,23 @@ void handleClientCommunication(int client_socket)
   while (true)
   {
     memset(buffer, 0, sizeof(buffer));
-    int valread = read(client_socket, buffer, sizeof(buffer));
+    int valread = recv(client_socket, buffer, sizeof(buffer) - 1, 0); // Melhor que read()
+
     if (valread <= 0)
     {
-      std::cout << "Client disconnected." << std::endl;
+      std::cout << "🔴 Client disconnected." << std::endl;
       break;
     }
 
     std::vector<std::string> split_result = split(buffer, ' ');
+
+    if (split_result.size() < 2)
+    {
+      std::string error_msg = "❌ Invalid request format.\n";
+      send(client_socket, error_msg.c_str(), error_msg.length(), 0);
+      continue;
+    }
+
     std::string operation = split_result[0];
     std::string filename = split_result[1];
     std::string json_string = split_result.size() > 2 ? split_result[2] : "";
@@ -100,23 +109,28 @@ void handleClientCommunication(int client_socket)
     if (operation == "CREATE")
     {
       createJsonFile(JsonData{.json_string = json_string, .file_name = filename});
-
-      std::string response = "File created with success\n";
+      std::string response = "✅ File created successfully.\n";
       send(client_socket, response.c_str(), response.length(), 0);
     }
     else if (operation == "READ")
     {
       try
       {
+        std::cout << "📖 Server reading " << filename << std::endl;
         json data = read_json_file(filename);
         std::string json_response = data.dump(2) + "\n";
         send(client_socket, json_response.c_str(), json_response.length(), 0);
       }
       catch (const std::exception &e)
       {
-        std::string error_msg = "Error: " + std::string(e.what()) + "\n";
+        std::string error_msg = "❌ Error: " + std::string(e.what()) + "\n";
         send(client_socket, error_msg.c_str(), error_msg.length(), 0);
       }
+    }
+    else
+    {
+      std::string error_msg = "❌ Unknown operation: " + operation + "\n";
+      send(client_socket, error_msg.c_str(), error_msg.length(), 0);
     }
   }
 
