@@ -9,7 +9,7 @@
 #include "json/create-file.hpp"
 #include "utils/split.hpp"
 #include <vector>
-#include "json/get-file.hpp"
+#include "json/read-file.hpp"
 
 constexpr int BUFFER_SIZE = 1024;
 constexpr int MAX_QUEUE = 3;
@@ -108,24 +108,16 @@ void handleClientCommunication(int client_socket)
 
     if (operation == "CREATE")
     {
-      createJsonFile(JsonData{.json_string = json_string, .file_name = filename});
+      create_json_file(JsonData{.json_string = json_string, .file_name = filename});
       std::string response = "✅ File created successfully.\n";
       send(client_socket, response.c_str(), response.length(), 0);
     }
     else if (operation == "READ")
     {
-      try
-      {
-        std::cout << "📖 Server reading " << filename << std::endl;
-        json data = read_json_file(filename);
-        std::string json_response = data.dump(2) + "\n";
-        send(client_socket, json_response.c_str(), json_response.length(), 0);
-      }
-      catch (const std::exception &e)
-      {
-        std::string error_msg = "❌ Error: " + std::string(e.what()) + "\n";
-        send(client_socket, error_msg.c_str(), error_msg.length(), 0);
-      }
+
+      json data = read_json_file(filename);
+      std::string json_response = data.dump(2) + "\n";
+      send(client_socket, json_response.c_str(), json_response.length(), 0);
     }
     else
     {

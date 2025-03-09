@@ -10,11 +10,11 @@ struct JsonData
   std::string file_name;
 };
 
-void createJsonFile(JsonData data)
+void create_json_file(JsonData data)
 {
   if (data.json_string.empty())
   {
-    std::cerr << "JSON string is empty!" << std::endl;
+    std::cerr << "❌ JSON string is empty!" << std::endl;
     return;
   }
 
@@ -32,11 +32,11 @@ void createJsonFile(JsonData data)
     }
     else
     {
-      std::cerr << "Error to open file!" << std::endl;
+      std::cerr << "❌ Error to open file!" << std::endl;
     }
   }
   catch (const std::exception &e)
   {
-    std::cerr << "Error to parse string to JSON: " << e.what() << std::endl;
+    std::cerr << "❌ Error to parse string to JSON: " << e.what() << std::endl;
   }
 }
