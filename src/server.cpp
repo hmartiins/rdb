@@ -9,14 +9,14 @@
 #include "json/create-file.hpp"
 #include "utils/split.hpp"
 #include <vector>
+#include "json/get-file.hpp"
 
 constexpr int BUFFER_SIZE = 1024;
 constexpr int MAX_QUEUE = 3;
 
 int setupServerSocket(int port);
 int acceptClientConnection(int server_fd);
-void receiveClientMessages(int client_socket);
-void sendMessagesToClient(int client_socket);
+void handleClientCommunication(int client_socket);
 
 int main(int argc, char *argv[])
 {
@@ -27,13 +27,12 @@ int main(int argc, char *argv[])
   int server_fd = setupServerSocket(port);
   std::cout << "Server running on port " << port << "..." << std::endl;
 
-  int client_socket = acceptClientConnection(server_fd);
-
-  std::thread receiveThread(receiveClientMessages, client_socket);
-
-  sendMessagesToClient(client_socket);
-
-  receiveThread.join();
+  while (true)
+  {
+    int client_socket = acceptClientConnection(server_fd);
+    std::thread clientThread(handleClientCommunication, client_socket);
+    clientThread.detach();
+  }
 
   return 0;
 }
@@ -76,11 +75,10 @@ int acceptClientConnection(int server_fd)
     exit(EXIT_FAILURE);
   }
 
-  std::cout << "Client connected!" << std::endl;
   return new_socket;
 }
 
-void receiveClientMessages(int client_socket)
+void handleClientCommunication(int client_socket)
 {
   char buffer[BUFFER_SIZE] = {0};
 
@@ -88,33 +86,39 @@ void receiveClientMessages(int client_socket)
   {
     memset(buffer, 0, sizeof(buffer));
     int valread = read(client_socket, buffer, sizeof(buffer));
-    if (valread > 0)
+    if (valread <= 0)
     {
-      std::vector<std::string> split_result = split(buffer, ' ');
-      std::string filename = split_result[0];
-      std::string json_string = split_result[1];
+      std::cout << "Client disconnected." << std::endl;
+      break;
+    }
 
-      std::cout << json_string << std::endl;
+    std::vector<std::string> split_result = split(buffer, ' ');
+    std::string operation = split_result[0];
+    std::string filename = split_result[1];
+    std::string json_string = split_result.size() > 2 ? split_result[2] : "";
 
-      createJsonFile(
-          JsonData{
-              .json_string = json_string,
-              .file_name = filename,
-          });
+    if (operation == "CREATE")
+    {
+      createJsonFile(JsonData{.json_string = json_string, .file_name = filename});
 
-      std::cout << "\nClient: " << buffer << std::endl;
-      std::cout << "Server (you): " << std::flush;
+      std::string response = "File created with success\n";
+      send(client_socket, response.c_str(), response.length(), 0);
+    }
+    else if (operation == "READ")
+    {
+      try
+      {
+        json data = read_json_file(filename);
+        std::string json_response = data.dump(2) + "\n";
+        send(client_socket, json_response.c_str(), json_response.length(), 0);
+      }
+      catch (const std::exception &e)
+      {
+        std::string error_msg = "Error: " + std::string(e.what()) + "\n";
+        send(client_socket, error_msg.c_str(), error_msg.length(), 0);
+      }
     }
   }
-}
 
-void sendMessagesToClient(int client_socket)
-{
-  std::string msg;
-  while (true)
-  {
-    std::cout << "Server (you): ";
-    std::getline(std::cin, msg);
-    send(client_socket, msg.c_str(), msg.length(), 0);
-  }
+  close(client_socket);
 }

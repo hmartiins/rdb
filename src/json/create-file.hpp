@@ -27,7 +27,6 @@ void createJsonFile(JsonData data)
     {
       file << parsed_json.dump(2);
       file.close();
-      std::cout << "JSON file write to success" << std::endl;
     }
     else
     {
