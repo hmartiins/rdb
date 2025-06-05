@@ -14,7 +14,7 @@ The server listens on a TCP port, handles each connected client in its own threa
 
 The client is a simple command-line interface that connects to 127.0.0.1 on the chosen port, sends your text commands, and prints whatever the server responds.
 
----
+
 
 ## 🚀 Technologies
 
@@ -22,7 +22,7 @@ C++
 
 Make
 
----
+
 
 ## 💻 Getting started
 
@@ -67,13 +67,13 @@ $ cd build/out
 $ ./client
 ```
 
----
+
 
 ### 🖼 Exemple
 
 ![Application Screenshot](.github/assets/Image.jpeg)
 
----
+
 
 ### 📁 Project Structure
 
@@ -101,7 +101,7 @@ $ ./client
 └── README.md                     # Project documentation
 ```
 
----
+
 
 ## 🛠 Contribution
 
