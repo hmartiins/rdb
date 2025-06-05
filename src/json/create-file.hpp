@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include "../utils/random-id.hpp"
 
 using json = nlohmann::json;
 
@@ -28,6 +29,7 @@ json create_json_file(JsonData data)
     }
 
     json parsed_json = json::parse(data.json_string);
+    parsed_json["id"] = generate_random_id();
 
     std::ofstream file(filename);
     if (file.is_open())
