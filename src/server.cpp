@@ -6,10 +6,12 @@
 #include <cstdlib>
 #include <thread>
 #include "socket_utils.hpp"
-#include "json/create-file.hpp"
 #include "utils/split.hpp"
 #include <vector>
+
+#include "json/create-file.hpp"
 #include "json/read-file.hpp"
+#include "json/update-file.hpp"
 
 constexpr int BUFFER_SIZE = 1024;
 constexpr int MAX_QUEUE = 3;
@@ -105,6 +107,7 @@ void handleClientCommunication(int client_socket)
     std::string operation = split_result[0];
     std::string filename = split_result[1];
     std::string json_string = split_result.size() > 2 ? split_result[2] : "";
+    std::string id = split_result.size() > 3 ? split_result[3] : "";
 
     if (operation == "CREATE")
     {
@@ -115,6 +118,12 @@ void handleClientCommunication(int client_socket)
     else if (operation == "READ")
     {
       json data = read_json_file(filename);
+      std::string json_response = data.dump(2) + "\n";
+      send(client_socket, json_response.c_str(), json_response.length(), 0);
+    }
+    else if (operation == "UPDATE")
+    {
+      json data = update_json_file(filename, id, json_string);
       std::string json_response = data.dump(2) + "\n";
       send(client_socket, json_response.c_str(), json_response.length(), 0);
     }
