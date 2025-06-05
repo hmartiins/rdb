@@ -80,7 +80,7 @@ $ ./client
 .
 ├── .github/
 │   └── assets/
-│       └── Image.jpeg            # SImage used in README
+│       └── Image.jpeg            # Image used in README
 ├── src/
 │   ├── json/
 │   │   ├── create-file.hpp       # Create JSON files
