@@ -1,7 +1,5 @@
 # RDB
 
-### 📡 C++ Client-Server Room Management System 📡
-
 ## 👀 About
 
 A lightweight and efficient C++ application to manage "rooms" and communication over sockets. It enables JSON-based file manipulation, dynamic ID creation, and provides a structured environment for networking and client-server interactions.
