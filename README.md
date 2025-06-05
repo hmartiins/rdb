@@ -1,6 +1,6 @@
 # RDB
 
-## 📡 C++ Client-Server Room Management System 📡
+### 📡 C++ Client-Server Room Management System 📡
 
 ## 👀 About
 
