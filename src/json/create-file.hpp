@@ -10,33 +10,42 @@ struct JsonData
   std::string file_name;
 };
 
-void create_json_file(JsonData data)
+json create_json_file(JsonData data)
 {
-  if (data.json_string.empty())
-  {
-    std::cerr << "❌ JSON string is empty!" << std::endl;
-    return;
-  }
-
-  std::cout << "🛠️ Server creating " << data.file_name << std::endl;
-
+  std::cout << "🛠️ Server creating..." << std::endl;
   try
   {
+    std::string filename = data.file_name;
+    if (filename.size() < 5 || filename.substr(filename.size() - 5) != ".json")
+    {
+      filename += ".json";
+    }
+    std::cout << "📄 Creating file: " << filename << std::endl;
+
+    if (data.json_string.empty())
+    {
+      throw std::runtime_error("JSON string is empty! " + filename);
+    }
+
     json parsed_json = json::parse(data.json_string);
 
-    std::ofstream file(data.file_name.append(".json"));
+    std::ofstream file(filename);
     if (file.is_open())
     {
       file << parsed_json.dump(2);
       file.close();
+
+      return json::object({{"message", "File created successfully: " + filename}});
     }
     else
     {
-      std::cerr << "❌ Error to open file!" << std::endl;
+      throw std::runtime_error("Error to open file " + filename);
     }
   }
   catch (const std::exception &e)
   {
-    std::cerr << "❌ Error to parse string to JSON: " << e.what() << std::endl;
+    std::string error_msg = "❌ Error: " + std::string(e.what()) + "\n";
+    std::cout << error_msg << std::endl;
+    return json::object({{"error", error_msg}});
   }
 }

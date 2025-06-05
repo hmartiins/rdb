@@ -108,9 +108,9 @@ void handleClientCommunication(int client_socket)
 
     if (operation == "CREATE")
     {
-      create_json_file(JsonData{.json_string = json_string, .file_name = filename});
-      std::string response = "✅ File created successfully.\n";
-      send(client_socket, response.c_str(), response.length(), 0);
+      json data = create_json_file(JsonData{.json_string = json_string, .file_name = filename});
+      std::string json_response = data.dump(2) + "\n";
+      send(client_socket, json_response.c_str(), json_response.length(), 0);
     }
     else if (operation == "READ")
     {
