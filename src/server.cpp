@@ -114,7 +114,6 @@ void handleClientCommunication(int client_socket)
     }
     else if (operation == "READ")
     {
-
       json data = read_json_file(filename);
       std::string json_response = data.dump(2) + "\n";
       send(client_socket, json_response.c_str(), json_response.length(), 0);

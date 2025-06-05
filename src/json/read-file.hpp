@@ -4,12 +4,18 @@
 
 using json = nlohmann::json;
 
-json read_json_file(const std::string &filename)
+json read_json_file(const std::string &filename_input)
 {
-  std::cout << "📖 Server reading " << filename << std::endl;
-
   try
   {
+    std::string filename = filename_input;
+    if (filename.size() < 5 || filename.substr(filename.size() - 5) != ".json")
+    {
+      filename += ".json";
+    }
+
+    std::cout << "📖 Server reading " << filename << std::endl;
+
     std::ifstream file(filename);
     if (!file)
     {
@@ -28,5 +34,6 @@ json read_json_file(const std::string &filename)
   catch (const std::exception &e)
   {
     std::string error_msg = "❌ Error: " + std::string(e.what()) + "\n";
+    return json::object({{"error", error_msg}});
   }
 }
