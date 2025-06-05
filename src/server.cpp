@@ -9,6 +9,7 @@
 #include "utils/split.hpp"
 #include <vector>
 
+#include "room_manager.hpp"
 #include "json/create-file.hpp"
 #include "json/read-file.hpp"
 #include "json/update-file.hpp"
@@ -82,6 +83,8 @@ int acceptClientConnection(int server_fd)
 
 void handleClientCommunication(int client_socket)
 {
+  RoomManager roomManager;
+
   char buffer[BUFFER_SIZE] = {0};
 
   while (true)
@@ -117,6 +120,7 @@ void handleClientCommunication(int client_socket)
     }
     else if (operation == "READ")
     {
+      roomManager.joinRoom(filename, client_socket);
       json data = read_json_file(filename);
       std::string json_response = data.dump(2) + "\n";
       send(client_socket, json_response.c_str(), json_response.length(), 0);
@@ -126,6 +130,9 @@ void handleClientCommunication(int client_socket)
       json data = update_json_file(filename, id, json_string);
       std::string json_response = data.dump(2) + "\n";
       send(client_socket, json_response.c_str(), json_response.length(), 0);
+
+      std::string notify_msg = "🔔 File " + filename + " was updated by another client.\n";
+      roomManager.notifyOthers(filename, client_socket, notify_msg);
     }
     else
     {
@@ -134,5 +141,6 @@ void handleClientCommunication(int client_socket)
     }
   }
 
+  roomManager.leaveAllRooms(client_socket);
   close(client_socket);
 }
