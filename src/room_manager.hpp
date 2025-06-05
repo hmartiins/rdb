@@ -30,15 +30,7 @@ public:
 
   void notifyOthers(const std::string &filename, int sender_socket, const std::string &message)
   {
-    std::cout << "🔔 Notifying others in room: " << filename << std::endl;
-
     std::lock_guard<std::mutex> lock(mutex);
-
-    std::cout << rooms.size() << " rooms available." << std::endl;
-    for (const auto &[room_name, clients] : rooms)
-    {
-      std::cout << "Room: " << room_name << " has " << clients.size() << " clients." << std::endl;
-    }
 
     auto it = rooms.find(filename);
     if (it != rooms.end())
