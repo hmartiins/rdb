@@ -1,8 +1,10 @@
 # 📡 C++ Client-Server Room Management System 📡
 
-👀 About
+## 👀 About
 
 A lightweight and efficient C++ application to manage "rooms" and communication over sockets. It enables JSON-based file manipulation, dynamic ID creation, and provides a structured environment for networking and client-server interactions.
+
+---
 
 ## 🚀 Technologies
 
@@ -18,8 +20,12 @@ Make
 
 Linux development environment
 
+---
+
 ## 💻 Getting started
+
 ### Requirements
+
 C++ compiler (e.g., g++ or clang++)
 
 CMake
@@ -28,25 +34,36 @@ Make
 
 Unix-based system (Linux or macOS)
 
-###Installing and running the project
+### Installing and running the project
 
 Clone the repository:
 
+```bash
 $ git clone git@github.com:your-user/rdb-main.git
 $ cd rdb-main
+```
 
 Build the project using cmake and make:
 
+```bash
 $ cmake .
 $ make
+```
 
 Run the server and client in separate terminals:
 
 #In one terminal
-$ ./server
 
+```bash
+$ ./server
+```
 #In another terminal
+
+```bash
 $ ./client
+```
+
+---
 
 ### 📁 Project Structure
 
@@ -65,6 +82,8 @@ $ ./client
 │   └── utils/
 │       ├── random-id.hpp  # ID generation helper
 │       └── split.hpp      # String splitting utilities
+
+---
 
 ## 🛠 Contribution
 
