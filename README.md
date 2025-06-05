@@ -67,6 +67,7 @@ $ ./client
 
 ### 📁 Project Structure
 
+```
 .
 ├── CMakeLists.txt         # CMake build config
 ├── Makefile               # Alternative build option
@@ -82,6 +83,7 @@ $ ./client
 │   └── utils/
 │       ├── random-id.hpp  # ID generation helper
 │       └── split.hpp      # String splitting utilities
+```
 
 ---
 
