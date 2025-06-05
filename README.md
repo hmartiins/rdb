@@ -67,6 +67,12 @@ $ ./client
 
 ---
 
+### 🖼 Exemple
+
+![Application Screenshot](.github/assets/Image.jpeg)
+
+---
+
 ### 📁 Project Structure
 
 ```
