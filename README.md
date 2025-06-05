@@ -39,7 +39,7 @@ Unix-based system (Linux or macOS)
 Clone the repository:
 
 ```bash
-$ git clone git@github.com:your-user/rdb-main.git
+$ git clone git@github.com/hmartiins/rdb
 $ cd rdb-main
 ```
 
