@@ -55,6 +55,7 @@ Run the server and client in separate terminals:
 #In one terminal
 
 ```bash
+$ cd build/out
 $ ./server
 ```
 #In another terminal
