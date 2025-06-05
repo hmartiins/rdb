@@ -40,7 +40,7 @@ Clone the repository:
 
 ```bash
 $ git clone git@github.com/hmartiins/rdb
-$ cd rdb-main
+$ cd rdb
 ```
 
 Build the project using cmake and make:
