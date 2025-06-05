@@ -19,10 +19,12 @@ constexpr int MAX_QUEUE = 3;
 
 int setupServerSocket(int port);
 int acceptClientConnection(int server_fd);
-void handleClientCommunication(int client_socket);
+void handleClientCommunication(int client_socket, RoomManager &roomManager);
 
 int main(int argc, char *argv[])
 {
+  RoomManager roomManager;
+
   int port = getPortArguments(argc, argv);
   if (port == -1)
     return EXIT_FAILURE;
@@ -33,7 +35,7 @@ int main(int argc, char *argv[])
   while (true)
   {
     int client_socket = acceptClientConnection(server_fd);
-    std::thread clientThread(handleClientCommunication, client_socket);
+    std::thread clientThread(handleClientCommunication, client_socket, std::ref(roomManager));
     clientThread.detach();
   }
 
@@ -81,10 +83,8 @@ int acceptClientConnection(int server_fd)
   return new_socket;
 }
 
-void handleClientCommunication(int client_socket)
+void handleClientCommunication(int client_socket, RoomManager &roomManager)
 {
-  RoomManager roomManager;
-
   char buffer[BUFFER_SIZE] = {0};
 
   while (true)
