@@ -4,21 +4,21 @@
 
 A lightweight and efficient C++ application to manage "rooms" and communication over sockets. It enables JSON-based file manipulation, dynamic ID creation, and provides a structured environment for networking and client-server interactions.
 
+All the essentials of a JSON-based “database” over raw sockets, in one place.  
+The server listens on a TCP port, handles each connected client in its own thread, and accepts three text commands:  
+- **CREATE** 
+- **READ** 
+- **UPDATE**   
+
+The client is a simple command-line interface that connects to 127.0.0.1 on the chosen port, sends your text commands, and prints whatever the server responds.
+
 ---
 
 ## 🚀 Technologies
 
 C++
 
-Sockets (low-level networking)
-
-JSON file operations
-
-CMake
-
 Make
-
-Linux development environment
 
 ---
 
