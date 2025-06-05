@@ -77,20 +77,26 @@ $ ./client
 
 ```
 .
-├── CMakeLists.txt         # CMake build config
-├── Makefile               # Alternative build option
+.
+├── .github/
+│   └── assets/
+│       └── Image.jpeg            # SImage used in README
 ├── src/
-│   ├── client.cpp         # Client application
-│   ├── server.cpp         # Server application
-│   ├── room_manager.hpp   # Room control logic
-│   ├── socket_utils.hpp   # Socket helper functions
 │   ├── json/
-│   │   ├── create-file.hpp
-│   │   ├── read-file.hpp
-│   │   └── update-file.hpp
-│   └── utils/
-│       ├── random-id.hpp  # ID generation helper
-│       └── split.hpp      # String splitting utilities
+│   │   ├── create-file.hpp       # Create JSON files
+│   │   ├── read-file.hpp         # Read JSON files
+│   │   └── update-file.hpp       # Update JSON files
+│   ├── utils/
+│   │   ├── random-id.hpp         # ID generation helper
+│   │   └── split.hpp             # String splitting utilities
+│   ├── client.cpp                # Client-side application logic
+│   ├── room_manager.hpp          # Room control logic
+│   ├── server.cpp                # Server-side application logic
+│   └── socket_utils.hpp          # Socket helper functions
+├── .gitignore
+├── CMakeLists.txt                # CMake build config
+├── Makefile                      # Alternative build option
+└── README.md                     # Project documentation
 ```
 
 ---
