@@ -1,13 +1,18 @@
 #include <iostream>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <mutex>
 
 using json = nlohmann::json;
+
+std::mutex file_mutex;
 
 json update_json_file(const std::string &filename_raw,
                       const std::string &id,
                       const std::string &new_json_str)
 {
+  std::lock_guard<std::mutex> lock(file_mutex);
+
   try
   {
     std::string filename = filename_raw;
@@ -39,6 +44,7 @@ json update_json_file(const std::string &filename_raw,
     {
       throw std::runtime_error("JSON de atualização está vazio!");
     }
+
     json to_update = json::parse(new_json_str);
 
     for (auto &[key, val] : to_update.items())
