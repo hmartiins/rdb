@@ -61,6 +61,7 @@ $ ./server
 #In another terminal
 
 ```bash
+$ cd build/out
 $ ./client
 ```
 
