@@ -103,6 +103,6 @@ A big thank you to everyone contributing to the project. Below are some of our m
 - [João Victor](https://github.com/joaovds)
 - [Gabriel Carvalho](https://github.com/GabrielQuinteiro)
 - [Leticia Silverio](https://github.com/devLeSilverio)
-- [Vitor Cavicholli](https://github.com/Vitorcavic)
+- [Vitor Cavicchiolli](https://github.com/Vitorcavic)
 - [Rennys Cardoso](https://github.com/yrsenn)
 
