@@ -12,15 +12,11 @@ The server listens on a TCP port, handles each connected client in its own threa
 
 The client is a simple command-line interface that connects to 127.0.0.1 on the chosen port, sends your text commands, and prints whatever the server responds.
 
-
-
 ## 🚀 Technologies
 
 C++
 
 Make
-
-
 
 ## 💻 Getting started
 
@@ -58,7 +54,7 @@ Run the server and client in separate terminals:
 $ cd build/out
 $ ./server
 ```
-#In another terminal
+# In another terminal
 
 ```bash
 $ cd build/out
@@ -66,11 +62,9 @@ $ ./client
 ```
 
 
-
 ### 🖼 Exemple
 
 ![Application Screenshot](.github/assets/Image.jpeg)
-
 
 
 ### 📁 Project Structure
@@ -98,17 +92,3 @@ $ ./client
 ├── Makefile                      # Alternative build option
 └── README.md                     # Project documentation
 ```
-
-
-
-## 🛠 Contribution
-
-A big thank you to everyone contributing to the project. Below are some of our main contributors:
-
-- [Henrique Martins](https://github.com/hmartiins)
-- [João Victor](https://github.com/joaovds)
-- [Gabriel Carvalho](https://github.com/GabrielQuinteiro)
-- [Leticia Silverio](https://github.com/devLeSilverio)
-- [Vitor Cavicchiolli](https://github.com/Vitorcavic)
-- [Rennys Cardoso](https://github.com/yrsenn)
-
