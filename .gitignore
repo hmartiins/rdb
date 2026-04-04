@@ -1,3 +1,21 @@
-out/*
-build/*
-.vscode
+out/
+build/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+CMakeInstallManifest.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+*.cmake
+
+# IDE
+.vscode/
+.idea/
+
+# Compiled binaries
+*.o
+*.a
+*.so
+*.dylib
