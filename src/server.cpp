@@ -1,20 +1,20 @@
 #include <iostream>
 #include <unistd.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <cstdlib>
 #include <thread>
-#include "socket_utils.hpp"
-#include "utils/split.hpp"
-#include <vector>
+#include <nlohmann/json.hpp>
 
+#include "socket_utils.hpp"
+#include "protocol.hpp"
 #include "room_manager.hpp"
 #include "json/create-file.hpp"
 #include "json/read-file.hpp"
 #include "json/update-file.hpp"
 
-constexpr int BUFFER_SIZE = 1024;
+using json = nlohmann::json;
+
 constexpr int MAX_QUEUE = 3;
 
 int setupServerSocket(int port);
@@ -85,59 +85,63 @@ int acceptClientConnection(int server_fd)
 
 void handleClientCommunication(int client_socket, RoomManager &roomManager)
 {
-  char buffer[BUFFER_SIZE] = {0};
+  std::string payload;
 
   while (true)
   {
-    memset(buffer, 0, sizeof(buffer));
-    int valread = recv(client_socket, buffer, sizeof(buffer) - 1, 0); // Melhor que read()
-
-    if (valread <= 0)
+    if (!recvMessage(client_socket, payload))
     {
       std::cout << "🔴 Client disconnected." << std::endl;
       break;
     }
 
-    std::vector<std::string> split_result = split(buffer, ' ');
-
-    if (split_result.size() < 2)
+    json request;
+    try
     {
-      std::string error_msg = "❌ Invalid request format.\n";
-      send(client_socket, error_msg.c_str(), error_msg.length(), 0);
+      request = json::parse(payload);
+    }
+    catch (const std::exception &e)
+    {
+      json error = {{"error", "Invalid JSON request: " + std::string(e.what())}};
+      sendMessage(client_socket, error.dump());
       continue;
     }
 
-    std::string operation = split_result[0];
-    std::string filename = split_result[1];
-    std::string json_string = split_result.size() > 2 ? split_result[2] : "";
-    std::string id = split_result.size() > 3 ? split_result[3] : "";
+    if (!request.contains("op") || !request.contains("filename"))
+    {
+      json error = {{"error", "Missing required fields: op, filename"}};
+      sendMessage(client_socket, error.dump());
+      continue;
+    }
+
+    std::string operation = request["op"];
+    std::string filename = request["filename"];
+    std::string json_string = request.contains("data") ? request["data"].dump() : "";
+    std::string id = request.value("id", "");
 
     if (operation == "CREATE")
     {
       json data = create_json_file(JsonData{.json_string = json_string, .file_name = filename});
-      std::string json_response = data.dump(2) + "\n";
-      send(client_socket, json_response.c_str(), json_response.length(), 0);
+      sendMessage(client_socket, data.dump(2));
     }
     else if (operation == "READ")
     {
       roomManager.joinRoom(filename, client_socket);
       json data = read_json_file(filename);
-      std::string json_response = data.dump(2) + "\n";
-      send(client_socket, json_response.c_str(), json_response.length(), 0);
+      sendMessage(client_socket, data.dump(2));
     }
     else if (operation == "UPDATE")
     {
       json data = update_json_file(filename, id, json_string);
-      std::string json_response = data.dump(2) + "\n";
-      send(client_socket, json_response.c_str(), json_response.length(), 0);
+      sendMessage(client_socket, data.dump(2));
 
-      std::string notify_msg = "🔔 File " + filename + " was updated by another client.\n";
+      std::string notify_msg = "File " + filename + " was updated by another client.";
       roomManager.notifyOthers(filename, client_socket, notify_msg);
     }
     else
     {
-      std::string error_msg = "❌ Unknown operation: " + operation + "\n";
-      send(client_socket, error_msg.c_str(), error_msg.length(), 0);
+      json error = {{"error", "Unknown operation: " + operation}};
+      sendMessage(client_socket, error.dump());
     }
   }
 

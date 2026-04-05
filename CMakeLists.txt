@@ -23,6 +23,7 @@ set_target_properties(client PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIR})
 
 # Linking libraries
 target_link_libraries(server PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(client PRIVATE nlohmann_json::nlohmann_json)
 
 # Execution targets
 add_custom_target(run-client

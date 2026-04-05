@@ -1,12 +1,18 @@
+#pragma once
+
 #include <map>
 #include <set>
 #include <mutex>
 #include <string>
-#include <algorithm>
+#include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <nlohmann/json.hpp>
 
 #include "json/read-file.hpp"
+#include "protocol.hpp"
+
+using json = nlohmann::json;
 
 class RoomManager
 {
@@ -33,25 +39,23 @@ public:
   void notifyOthers(const std::string &filename, int sender_socket, const std::string &message)
   {
     std::lock_guard<std::mutex> lock(mutex);
-
     std::cout << "🔔 Notifying others in room: " << filename << std::endl;
 
     auto it = rooms.find(filename);
-    if (it != rooms.end())
+    if (it == rooms.end())
+      return;
+
+    json updatedData = read_json_file(filename);
+    json notification = {
+      {"event", "update"},
+      {"message", message},
+      {"data", updatedData}};
+    std::string payload = notification.dump(2);
+
+    for (int sock : it->second)
     {
-
-      // Lê o conteúdo atualizado do arquivo JSON
-      json updatedData = read_json_file(filename);
-      std::string jsonResponse = updatedData.dump(2) + "\n";
-
-      for (int sock : it->second)
-      {
-        if (sock != sender_socket)
-        {
-          send(sock, message.c_str(), message.length(), 0);
-          send(sock, jsonResponse.c_str(), jsonResponse.length(), 0);
-        }
-      }
+      if (sock != sender_socket)
+        sendMessage(sock, payload);
     }
   }
 };
