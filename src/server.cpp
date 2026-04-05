@@ -8,6 +8,7 @@
 
 #include "socket_utils.hpp"
 #include "protocol.hpp"
+#include "thread_pool.hpp"
 #include "room_manager.hpp"
 #include "json/create-file.hpp"
 #include "json/read-file.hpp"
@@ -16,6 +17,7 @@
 using json = nlohmann::json;
 
 constexpr int MAX_QUEUE = 3;
+constexpr int THREAD_POOL_SIZE = 10;
 
 int setupServerSocket(int port);
 int acceptClientConnection(int server_fd);
@@ -24,19 +26,21 @@ void handleClientCommunication(int client_socket, RoomManager &roomManager);
 int main(int argc, char *argv[])
 {
   RoomManager roomManager;
+  ThreadPool pool(THREAD_POOL_SIZE);
 
   int port = getPortArguments(argc, argv);
   if (port == -1)
     return EXIT_FAILURE;
 
   int server_fd = setupServerSocket(port);
-  std::cout << "🟢 Server running on port " << port << "..." << std::endl;
+  std::cout << "🟢 Server running on port " << port << " with " << THREAD_POOL_SIZE << " workers..." << std::endl;
 
   while (true)
   {
     int client_socket = acceptClientConnection(server_fd);
-    std::thread clientThread(handleClientCommunication, client_socket, std::ref(roomManager));
-    clientThread.detach();
+    pool.enqueue([client_socket, &roomManager] {
+      handleClientCommunication(client_socket, roomManager);
+    });
   }
 
   return 0;
