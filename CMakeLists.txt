@@ -54,6 +54,7 @@ add_executable(unit_tests
     tests/test_split.cpp
     tests/test_socket_utils.cpp
     tests/test_thread_pool.cpp
+    tests/test_room_manager.cpp
 )
 
 target_include_directories(unit_tests PRIVATE ${SRC_DIR})
