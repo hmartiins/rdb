@@ -53,6 +53,7 @@ add_executable(unit_tests
     tests/test_random_id.cpp
     tests/test_split.cpp
     tests/test_socket_utils.cpp
+    tests/test_thread_pool.cpp
 )
 
 target_include_directories(unit_tests PRIVATE ${SRC_DIR})
