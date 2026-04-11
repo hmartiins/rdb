@@ -51,6 +51,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(unit_tests
     tests/test_random_id.cpp
+    tests/test_split.cpp
 )
 
 target_include_directories(unit_tests PRIVATE ${SRC_DIR})
