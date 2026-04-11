@@ -37,3 +37,33 @@ add_custom_target(run-server
 add_custom_target(run-file
     COMMAND ${BUILD_DIR}/file
     DEPENDS file)
+
+# --- Tests ---
+enable_testing()
+
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+add_executable(unit_tests
+    tests/test_random_id.cpp
+)
+
+target_include_directories(unit_tests PRIVATE ${SRC_DIR})
+target_link_libraries(unit_tests PRIVATE
+    GTest::gtest_main
+    nlohmann_json::nlohmann_json
+)
+
+set_target_properties(unit_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIR})
+
+include(GoogleTest)
+gtest_discover_tests(unit_tests)
+
+add_custom_target(run-tests
+    COMMAND ${BUILD_DIR}/unit_tests
+    DEPENDS unit_tests)
